@@ -1,0 +1,48 @@
+function [elv, erv, ea] = elastancePoint(tn,tc)
+
+    TPB = 0.92*tc; % P-wave beginning time
+    TPE = 1.01*tc; % P-wave ending time
+
+    TT = 0.30*tc; % T-wave peak time
+    TTE = 0.45*tc; % T-wave ending time
+
+    aa_ = 0;
+    av_ = 0;
+
+    % Atrium
+    if tn >= TPB && tn < TPE
+        aa_ = 1 - cos(((tn - TPB)/(TPE - TPB))*2*pi);
+    end
+
+    % Ventricle
+    if tn >=0 && tn < TT
+        av_ = 1 - cos((tn/TT)*pi);
+    elseif tn >= TT && tn < TTE
+        av_ = 1 + cos(((tn - TT)/(TTE - TT))*pi);
+    end
+% 
+%     aa = [aa aa_];
+%     av = [av av_];
+
+    % LEFT AND RIGHT ATRIUM
+    ead = 0.15;
+    eas = 0.25;
+    ea = ead + ((eas-ead)/2)*aa_;
+
+    % LEFT VENTRICLE
+    elv_min = 0.1;
+%     elv_max = 2.5;
+    elv_max = 1.2;
+    elv = elv_min + ((elv_max - elv_min)/2)*av_;
+
+    % RIGHT VENTRICLE
+    erv_min = 0.025;
+    erv_max = 1.15;
+    erv = erv_min + ((erv_max - erv_min)/2)*av_;
+
+%     PLOT
+%     t = 0:passo:tf;
+%     plot(t,elv,t,ea,'-.',t,erv,'--');
+%     legend('E(lv)', 'E(la)', 'E(rv)');
+
+end
